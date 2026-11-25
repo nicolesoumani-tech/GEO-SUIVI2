@@ -1,0 +1,2794 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GEO SUIVI2 — SUIVI TRANSIT</title>
+  <style>
+    :root {
+      --bg: #f1f5f9;
+      --surface: #ffffff;
+      --surface-alt: #f8fafc;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --primary: #0f766e;
+      --primary-hover: #115e59;
+      --accent: #1d4ed8;
+      --success: #15803d;
+      --success-bg: #dcfce7;
+      --warning: #b45309;
+      --warning-bg: #fef3c7;
+      --danger: #b91c1c;
+      --danger-bg: #fee2e2;
+      --info: #0369a1;
+      --info-bg: #e0f2fe;
+      --radius: 10px;
+      --shadow: 0 2px 10px rgba(15, 23, 42, 0.06);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.45;
+    }
+
+    button, input, select, textarea {
+      font-family: inherit;
+      font-size: 14px;
+    }
+
+    button {
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      padding: 8px 13px;
+      border-radius: 8px;
+      font-weight: 500;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+
+    button:hover:not(:disabled) {
+      background: var(--surface-alt);
+      border-color: #cbd5e1;
+    }
+
+    button:disabled, input:disabled, select:disabled, textarea:disabled {
+      opacity: 0.72;
+      cursor: not-allowed;
+      background: #e2e8f0;
+      color: #334155;
+    }
+
+    button.primary {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+    }
+
+    button.primary:hover:not(:disabled) {
+      background: var(--primary-hover);
+      border-color: var(--primary-hover);
+    }
+
+    button.blue {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    button.success {
+      background: var(--success);
+      border-color: var(--success);
+      color: #fff;
+    }
+
+    button.warning {
+      background: var(--warning);
+      border-color: var(--warning);
+      color: #fff;
+    }
+
+    button.danger {
+      background: var(--danger);
+      border-color: var(--danger);
+      color: #fff;
+    }
+
+    button.sm {
+      padding: 5px 10px;
+      font-size: 12.5px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--text);
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.14);
+    }
+
+    /* Login */
+    #loginScreen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: linear-gradient(135deg, #0f172a 0%, #115e59 100%);
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 440px;
+      background: var(--surface);
+      border-radius: 14px;
+      padding: 28px;
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.25);
+    }
+
+    .login-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .login-brand h1 {
+      margin: 0;
+      font-size: 20px;
+      letter-spacing: 0.4px;
+    }
+
+    .login-sub {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 18px;
+    }
+
+    .field {
+      margin-bottom: 12px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 12.5px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: #334155;
+    }
+
+    .check-inline {
+      display: inline-flex !important;
+      align-items: center;
+      gap: 6px;
+      width: auto !important;
+      cursor: pointer;
+    }
+
+    .check-inline input {
+      width: auto;
+      margin: 0;
+    }
+
+    .error-box {
+      background: var(--danger-bg);
+      color: var(--danger);
+      border: 1px solid #fca5a5;
+      padding: 9px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      margin-bottom: 14px;
+      display: none;
+    }
+
+    .hint-box {
+      margin-top: 14px;
+      padding: 10px 12px;
+      background: var(--surface-alt);
+      border: 1px dashed #cbd5e1;
+      border-radius: 8px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* App */
+    #appScreen {
+      display: none;
+      min-height: 100vh;
+    }
+
+    header.topbar {
+      background: #0f172a;
+      color: #fff;
+      padding: 12px 20px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .brand-title {
+      font-weight: 700;
+      font-size: 16px;
+      letter-spacing: 0.5px;
+    }
+
+    .user-badge {
+      background: rgba(255, 255, 255, 0.12);
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 12.5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sync-pill {
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.12);
+      color: #e2e8f0;
+    }
+
+    .sync-pill.online {
+      background: rgba(21, 128, 61, 0.35);
+      color: #bbf7d0;
+      border: 1px solid rgba(74, 222, 128, 0.45);
+    }
+
+    .sync-pill.local {
+      background: rgba(180, 83, 9, 0.35);
+      color: #fde68a;
+      border: 1px solid rgba(251, 191, 36, 0.45);
+    }
+
+    .topbar-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .topbar-actions button {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.2);
+      color: #fff;
+    }
+
+    .topbar-actions button:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.18);
+    }
+
+    .topbar-actions button.primary {
+      background: #0d9488;
+      border-color: #0d9488;
+    }
+
+    .topbar-actions button.danger {
+      background: #dc2626;
+      border-color: #dc2626;
+    }
+
+    main.container {
+      max-width: 1420px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .cloud-banner {
+      background: #fefce8;
+      border: 1px solid #fde047;
+      color: #854d0e;
+      border-radius: var(--radius);
+      padding: 11px 14px;
+      margin-bottom: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+    }
+
+    .cloud-banner.connected {
+      background: #f0fdf4;
+      border-color: #86efac;
+      color: #166534;
+    }
+
+    .caution-banner {
+      background: #fef2f2;
+      border: 1.5px solid #f87171;
+      color: #991b1b;
+      border-radius: var(--radius);
+      padding: 11px 14px;
+      margin-bottom: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+    }
+
+    .alert-banner {
+      background: #fff1f2;
+      border: 1px solid #fecdd3;
+      color: #9f1239;
+      border-radius: var(--radius);
+      padding: 11px 14px;
+      margin-bottom: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+    }
+
+    .truck-banner {
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      color: #92400e;
+      border-radius: var(--radius);
+      padding: 11px 14px;
+      margin-bottom: 14px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+    }
+
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .kpi-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .kpi-label {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .kpi-value {
+      font-size: 24px;
+      font-weight: 700;
+      margin-top: 4px;
+    }
+
+    .kpi-sub {
+      font-size: 11.5px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .toolbar {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .toolbar-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .toolbar-group input, .toolbar-group select {
+      width: auto;
+      min-width: 165px;
+    }
+
+    .table-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 1060px;
+    }
+
+    th, td {
+      padding: 11px 12px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+      font-size: 13.5px;
+      vertical-align: middle;
+    }
+
+    th {
+      background: var(--surface-alt);
+      font-size: 12px;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    tr:hover td {
+      background: #f8fafc;
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-size: 11.5px;
+      font-weight: 600;
+    }
+
+    .pill.rouge { background: var(--danger-bg); color: var(--danger); }
+    .pill.vert { background: var(--success-bg); color: var(--success); }
+    .pill.bleu { background: var(--info-bg); color: var(--info); }
+    .pill.jaune { background: var(--warning-bg); color: var(--warning); }
+    .pill.cloture { background: #e2e8f0; color: #334155; }
+
+    .row-actions {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .containers-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .container-slot label {
+      display: block;
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--muted);
+      margin-bottom: 3px;
+    }
+
+    .file-chip-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .file-chip {
+      background: #fff;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      padding: 3px 8px;
+      font-size: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .truck-alloc-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin-top: 8px;
+    }
+
+    .evolution-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .evolution-item {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--primary);
+      border-radius: 8px;
+      padding: 9px 12px;
+      font-size: 13px;
+    }
+
+    .evolution-meta {
+      font-size: 11.5px;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 3px;
+    }
+
+    /* Modals */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.55);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 50;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal {
+      background: var(--surface);
+      border-radius: 12px;
+      width: 100%;
+      max-width: 980px;
+      max-height: 92vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+    }
+
+    .modal-header {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .modal-header h2 {
+      margin: 0;
+      font-size: 17px;
+    }
+
+    .modal-body {
+      padding: 18px 20px;
+      overflow-y: auto;
+    }
+
+    .modal-footer {
+      padding: 12px 20px;
+      border-top: 1px solid var(--border);
+      background: var(--surface-alt);
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+      gap: 12px;
+    }
+
+    .section-box {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 14px;
+      background: var(--surface-alt);
+    }
+
+    .section-box.locked-section {
+      opacity: 0.72;
+      background: #f1f5f9;
+    }
+
+    .section-box h3 {
+      margin: 0 0 10px 0;
+      font-size: 14px;
+      color: #1e293b;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .role-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .role-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #fff;
+      border: 1px solid var(--border);
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-size: 13px;
+      width: auto;
+    }
+
+    .role-chip input {
+      width: auto;
+      margin: 0;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #0f172a;
+      color: #fff;
+      padding: 11px 16px;
+      border-radius: 9px;
+      font-size: 13px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+      z-index: 100;
+      display: none;
+    }
+
+    @media print {
+      body * { visibility: hidden; }
+      #printArea, #printArea * { visibility: visible; }
+      #printArea {
+        display: block !important;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        padding: 18px;
+        background: #fff;
+        color: #000;
+      }
+      .no-print { display: none !important; }
+    }
+
+    #printArea {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ÉCRAN DE CONNEXION -->
+  <div id="loginScreen">
+    <div class="login-card">
+      <div class="login-brand">
+        <span style="font-size:24px;">⚓</span>
+        <h1>GEO SUIVI2</h1>
+      </div>
+      <div class="login-sub">Suivi portuaire Lomé, BL / BAD / GUCE, caution permanente, détention &amp; hinterland</div>
+
+      <div id="loginError" class="error-box"></div>
+
+      <form id="loginForm">
+        <div class="field">
+          <label for="loginUsername">Identifiant / Utilisateur</label>
+          <input type="text" id="loginUsername" autocomplete="username" placeholder="Ex: admin, superviseur ou transit" required />
+        </div>
+        <div class="field">
+          <label for="loginPassword">Mot de passe</label>
+          <input type="password" id="loginPassword" autocomplete="current-password" placeholder="••••••••" required />
+        </div>
+        <button type="submit" id="loginSubmitBtn" class="primary" style="width:100%; padding:10px;">Se connecter</button>
+      </form>
+
+      <div style="margin-top:10px; display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">
+        <button type="button" class="sm" onclick="openCloudSyncModal()">☁️ Configurer la synchro en ligne</button>
+        <button type="button" class="sm" onclick="resetStorageSession()">Réinitialiser le cache local</button>
+      </div>
+
+      <div class="hint-box">
+        <strong>Comptes par défaut :</strong><br />
+        Admin : <code>admin</code> / <code>admin123</code><br />
+        Superviseur : <code>superviseur</code> / <code>sup123</code><br />
+        Agent Transit : <code>transit</code> / <code>trans123</code>
+      </div>
+    </div>
+  </div>
+
+  <!-- APPLICATION PRINCIPALE -->
+  <div id="appScreen">
+    <header class="topbar">
+      <div class="topbar-left">
+        <div class="brand-title">⚓ GEO SUIVI2 — LOMÉ</div>
+        <div class="user-badge">
+          <span id="currentUserLabel">Utilisateur</span>
+          <span id="currentRolesLabel" style="opacity:0.85;"></span>
+        </div>
+        <div id="cloudStatusBadge" class="sync-pill local" onclick="openCloudSyncModal()" style="cursor:pointer;" title="Cliquer pour configurer la synchronisation partagée en ligne">
+          ● Mode Local
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <button onclick="openCloudSyncModal()">☁️ Synchro En Ligne</button>
+        <button onclick="exportBulkBordereauPdf()">📄 Bordereau PDF (Groupé)</button>
+        <button id="btnAdminPanel" onclick="openAdminModal()" style="display:none;">🛡️ Administration</button>
+        <button id="btnSettings" onclick="openSettingsModal()" style="display:none;">⚙️ Caution &amp; Réglages</button>
+        <button onclick="logout()" class="danger sm">Déconnexion</button>
+      </div>
+    </header>
+
+    <main class="container">
+      <div id="cloudBanner" class="cloud-banner"></div>
+      <div id="cautionBanner" class="caution-banner"></div>
+      <div id="alertBanner" class="alert-banner" style="display:none;"></div>
+      <div id="truckBanner" class="truck-banner" style="display:none;"></div>
+
+      <div class="kpis" id="kpiContainer"></div>
+
+      <div class="toolbar">
+        <div class="toolbar-group">
+          <input type="text" id="searchInput" placeholder="Rechercher répertoire, BL, client, navire, lieu dépotage, conteneur..." oninput="renderDossiers()" />
+          <select id="circuitFilter" onchange="renderDossiers()">
+            <option value="TOUS">Tous les circuits</option>
+            <option value="ROUGE">Rouge (Douane / Blocage)</option>
+            <option value="VERT">Vert (Normal / Validé)</option>
+            <option value="BLEU">Bleu (Dépotage / CFS)</option>
+            <option value="JAUNE">Jaune (En attente)</option>
+          </select>
+          <select id="lieuDepotFilter" onchange="renderDossiers()">
+            <option value="TOUS">Tous lieux de dépotage</option>
+            <option value="VILLE">Ville (Lomé)</option>
+            <option value="PIA">PIA (Adétikopé)</option>
+            <option value="HINTERLAND">Hinterland</option>
+            <option value="CFS">CFS</option>
+            <option value="MAD">Magasins (MAD)</option>
+          </select>
+          <select id="blTypeFilter" onchange="renderDossiers()">
+            <option value="TOUS">Tous types BL</option>
+            <option value="ORIGINAL">Original</option>
+            <option value="TELEX_RELEASE">Telex Release</option>
+            <option value="SEA_WAYBILL">Sea Waybill</option>
+          </select>
+        </div>
+
+        <div class="toolbar-group">
+          <button type="button" class="sm" onclick="pullCloudNow()">↻ Actualiser en ligne</button>
+          <button id="btnNewDossier" onclick="openDossierModal()" class="primary">+ Nouveau Dossier</button>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:36px;"><input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll(this.checked)" /></th>
+              <th>Répertoire</th>
+              <th>N° BL &amp; Type</th>
+              <th>Client / Compagnie</th>
+              <th>Lieu Dépotage &amp; Destination</th>
+              <th>Caution / Détention / Conteneurs</th>
+              <th>Statut / Alertes</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="dossiersTableBody"></tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+
+  <!-- MODAL SYNCHRONISATION PARTAGÉE EN LIGNE -->
+  <div id="cloudSyncModal" class="modal-backdrop">
+    <div class="modal" style="max-width:680px;">
+      <div class="modal-header">
+        <h2>☁️ Synchronisation Partagée en Ligne — GEO SUIVI2</h2>
+        <button onclick="closeModal('cloudSyncModal')" class="sm">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="section-box">
+          <h3>Partage entre postes &amp; appareils</h3>
+          <div style="font-size:13px; color:#334155; line-height:1.5;">
+            Activez un <strong>Code d'Espace Partagé</strong> commun à vos postes et appareils pour synchroniser les dossiers, BL, cautions, détentions et rôles, ou utilisez l'export/import JSON à tout moment.
+          </div>
+        </div>
+
+        <div class="section-box">
+          <h3>Configuration de l'Espace Partagé</h3>
+          <div class="grid-2">
+            <div class="field">
+              <label for="cloudEnabled">Activer la synchronisation en ligne</label>
+              <select id="cloudEnabled">
+                <option value="true">Activée (Partagée en ligne)</option>
+                <option value="false">Désactivée (Local uniquement)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="cloudWorkspaceCode">Code d'Espace Partagé</label>
+              <input type="text" id="cloudWorkspaceCode" placeholder="Ex: GEO-SUIVI2-LOME" />
+            </div>
+          </div>
+          <div class="field">
+            <label for="cloudEndpointUrl">URL du serveur / stockage partagé (optionnel)</label>
+            <input type="text" id="cloudEndpointUrl" placeholder="Ex: https://.../votre-endpoint" />
+          </div>
+          <div class="field" style="margin-bottom:0;">
+            <label for="cloudApiKey">Clé d'accès / Token (optionnel)</label>
+            <input type="password" id="cloudApiKey" placeholder="Optionnel" />
+          </div>
+        </div>
+
+        <div class="section-box" style="margin-bottom:0;">
+          <h3>Synchronisation immédiate &amp; Sauvegarde JSON</h3>
+          <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
+            <button type="button" class="primary sm" onclick="saveAndSyncCloudConfig()">💾 Enregistrer &amp; Synchroniser</button>
+            <button type="button" class="sm" onclick="pullCloudNow()">⬇️ Télécharger</button>
+            <button type="button" class="sm" onclick="pushCloudNow()">⬆️ Publier</button>
+            <button type="button" class="sm" onclick="exportStateJsonFile()">📤 Exporter JSON</button>
+            <label class="button sm" style="display:inline-flex; align-items:center; gap:6px; cursor:pointer; background:#fff; border:1px solid var(--border); padding:5px 10px; border-radius:8px; font-size:12.5px; font-weight:500;">
+              📥 Importer JSON
+              <input type="file" accept=".json,application/json" style="display:none;" onchange="importStateJsonFile(this.files)" />
+            </label>
+          </div>
+          <div id="cloudSyncLog" style="font-size:12px; color:var(--muted);">Dernière synchronisation : jamais</div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button onclick="closeModal('cloudSyncModal')">Fermer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DOSSIER COMPLET -->
+  <div id="dossierModal" class="modal-backdrop">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="dossierModalTitle">Dossier — GEO SUIVI2</h2>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <button type="button" id="btnCloseDossierSupervisor" class="success sm" style="display:none;" onclick="closeDossierBySupervisor()">✓ Clôturer le dossier</button>
+          <button onclick="closeModal('dossierModal')" class="sm">✕</button>
+        </div>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="editDossierId" />
+
+        <div id="dossierStatusBanner" style="display:none; margin-bottom:12px;" class="truck-banner"></div>
+
+        <!-- 1. Informations générales, BL & Lieu de dépotage -->
+        <div id="secGeneral" class="section-box">
+          <h3>
+            <span>1. Informations Dossier, Type de BL &amp; Lieu de Dépotage</span>
+            <span id="badgeGeneralAccess" class="pill bleu"></span>
+          </h3>
+          <div class="grid-3">
+            <div class="field">
+              <label>N° Répertoire</label>
+              <input type="text" id="fRepertoire" placeholder="Ex: GS200001" />
+            </div>
+            <div class="field">
+              <label>N° Bill of Lading (BL)</label>
+              <input type="text" id="fBl" placeholder="Ex: TWN0987353" />
+            </div>
+            <div class="field">
+              <label>Type de BL</label>
+              <select id="fBlType">
+                <option value="ORIGINAL">Original</option>
+                <option value="TELEX_RELEASE">Telex Release</option>
+                <option value="SEA_WAYBILL">Sea Waybill</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Client / Importateur</label>
+              <input type="text" id="fClient" placeholder="Nom du client" />
+            </div>
+            <div class="field">
+              <label>Compagnie maritime / Navire</label>
+              <input type="text" id="fNavire" placeholder="Ex: CMA CGM / MSC" />
+            </div>
+            <div class="field">
+              <label>Lieu de dépotage</label>
+              <select id="fLieuDepot">
+                <option value="VILLE">Ville (Lomé)</option>
+                <option value="PIA">PIA (Plateforme Industrielle d'Adétikopé)</option>
+                <option value="HINTERLAND">Hinterland</option>
+                <option value="CFS">CFS</option>
+                <option value="MAD">Magasins (MAD)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Pays de provenance</label>
+              <input type="text" id="fPaysProvenance" placeholder="Ex: Chine" />
+            </div>
+            <div class="field">
+              <label>Destination finale / Pays</label>
+              <input type="text" id="fDestination" placeholder="Ex: Burkina Faso / Lomé" />
+            </div>
+            <div class="field">
+              <label>Mode d'opération</label>
+              <select id="fTransportMode" onchange="toggleTruckSections()">
+                <option value="SUR_CAMION">Sur camion</option>
+                <option value="DEPOTAGE">Dépotage</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Poids</label>
+              <input type="text" id="fPoids" placeholder="Ex: 25 000 kg" />
+            </div>
+            <div class="field">
+              <label>Quantité / Type TC</label>
+              <input type="text" id="fQuantite" placeholder="Ex: 2 x 40'HC" />
+            </div>
+            <div class="field">
+              <label>Circuit</label>
+              <select id="fCircuit">
+                <option value="VERT">VERT</option>
+                <option value="ROUGE">ROUGE</option>
+                <option value="BLEU">BLEU</option>
+                <option value="JAUNE">JAUNE</option>
+              </select>
+            </div>
+            <div class="field" style="grid-column: span 2;">
+              <label>Statut actuel du dossier</label>
+              <input type="text" id="fStatut" placeholder="Ex: Validation BAD GUCE / Enlèvement / Retour vide" />
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Conteneurs -->
+        <div id="secContainers" class="section-box">
+          <h3>
+            <span>2. Conteneurs (4 lettres + 7 chiffres — collage auto-réparti)</span>
+            <button type="button" id="btnAddContainer" class="sm" onclick="addContainerField()">+ Ajouter un champ conteneur</button>
+          </h3>
+          <div style="font-size:12px; color:var(--muted); margin-bottom:8px;">
+            Collez plusieurs numéros (ex. <code>CMAU1234567 MSCU9876543</code>) dans le <strong>premier champ</strong> pour les répartir automatiquement.
+          </div>
+          <div id="containersFieldsGrid" class="containers-grid"></div>
+        </div>
+
+        <!-- 3. Caution Permanente, Détention & Dates de Fin / Retour -->
+        <div id="secCautionDetention" class="section-box">
+          <h3>
+            <span>3. Caution Permanente, Détention Conteneurs &amp; Dates (Fin / Retour)</span>
+            <span class="pill rouge">CAUTION &amp; DÉTENTION</span>
+          </h3>
+          <div class="grid-3">
+            <div class="field">
+              <label for="fCautionMode">Utilisation caution permanente</label>
+              <select id="fCautionMode">
+                <option value="PERMANENTE_ACTIVE">Caution permanente — Active</option>
+                <option value="PERMANENTE_SUSPENDUE">Caution permanente — Suspendue</option>
+                <option value="LEVEE_EN_COURS">Levée de suspension / Règlement en cours</option>
+                <option value="CAUTION_PONCTUELLE">Caution ponctuelle / Hors caution perm.</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="fDetentionStatus">État de détention</label>
+              <select id="fDetentionStatus">
+                <option value="RAS">RAS / Dans la franchise</option>
+                <option value="ALERTE_72H">Alerte expiration / détention &lt; 72h</option>
+                <option value="DETENTION_EN_COURS">Détention en cours / Impayé</option>
+                <option value="RESTITUE_SOLDE">Conteneurs restitués / Soldé</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="fDetentionAmount">Montant détention / règlement (FCFA)</label>
+              <input type="text" id="fDetentionAmount" placeholder="Ex: 0 FCFA ou 10 000 000 FCFA" />
+            </div>
+            <div class="field">
+              <label for="fDateFinFranchise">Date de fin (Franchise / BAD / Détention)</label>
+              <input type="datetime-local" id="fDateFinFranchise" />
+            </div>
+            <div class="field">
+              <label for="fDateRetourPrevue">Date prévue retour / restitution</label>
+              <input type="date" id="fDateRetourPrevue" />
+            </div>
+            <div class="field">
+              <label for="fGuceRef">Réf. GUCE / BAD / Déclaration</label>
+              <input type="text" id="fGuceRef" placeholder="Ex: GUCE-2026-..." />
+            </div>
+          </div>
+          <div class="field" style="margin-bottom:0;">
+            <label for="fCautionNote">Observation caution permanente / détention / autorisation de restitution</label>
+            <textarea id="fCautionNote" rows="2" placeholder="Préciser suspension, règlement effectué, autorisation de restitution des TC..."></textarea>
+          </div>
+        </div>
+
+        <!-- 4. Passation, Camions & Dépotage -->
+        <div id="secPassation" class="section-box">
+          <h3>
+            <span>4. Passation, Enlèvement, Camions &amp; Répartition Dépotage</span>
+            <span class="pill bleu">EXPLOITATION</span>
+          </h3>
+          <div class="grid-2">
+            <div class="field">
+              <label for="fPassationBon">Bon / Validation</label>
+              <select id="fPassationBon">
+                <option value="EN_ATTENTE">En attente validation BAD / GUCE</option>
+                <option value="BAD_VALIDE">BAD validé</option>
+                <option value="BAE">Bon à enlever (BAE)</option>
+                <option value="BAC">Bon à conduire (BAC)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="fPassationConsigne">Consigne / Note d'enlèvement</label>
+              <input type="text" id="fPassationConsigne" placeholder="Ex: Restitution impérative au parc / dépôt..." />
+            </div>
+          </div>
+
+          <div id="surCamionSection" class="truck-alloc-card">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap;">
+              <strong>Affectation des conteneurs au camion (Sur camion)</strong>
+              <button type="button" class="sm" onclick="addTruckAssignmentRow('SUR_CAMION')">+ Ajouter un camion</button>
+            </div>
+            <div id="surCamionRows"></div>
+          </div>
+
+          <div id="depotageSection" class="truck-alloc-card" style="display:none;">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap;">
+              <strong>Répartition des poids et quantités par camion (Dépotage)</strong>
+              <button type="button" class="sm" onclick="addTruckAssignmentRow('DEPOTAGE')">+ Ajouter un camion de dépotage</button>
+            </div>
+            <div id="depotageRows"></div>
+          </div>
+
+          <div class="field" style="margin-top:10px; margin-bottom:0;">
+            <label>Demande de camion de chargement (signale le Superviseur)</label>
+            <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+              <label class="check-inline">
+                <input type="checkbox" id="fManTruckRequested" onchange="renderTruckDemandPreview()" />
+                <strong>Demander un camion de chargement</strong>
+              </label>
+              <span id="truckRequestBadge" class="pill jaune" style="display:none;">Dossier en attente de camion</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. Retour vide & Pièces -->
+        <div id="emptyReturnSection" class="section-box">
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:8px;">
+            <h3 style="margin:0;">5. Retour Vide Conteneurs &amp; Documents Joints</h3>
+            <button type="button" class="warning sm" onclick="triggerEmptyReturnAction()">🔄 Enregistrer retour vide</button>
+          </div>
+          <div class="grid-3">
+            <div class="field" style="margin-bottom:0;">
+              <label for="fEmptyReturnDate">Date effective du retour vide</label>
+              <input type="date" id="fEmptyReturnDate" />
+            </div>
+            <div class="field" style="margin-bottom:0;">
+              <label for="fEmptyReturnFile">Bordereau / Reçu retour vide</label>
+              <input type="file" id="fEmptyReturnFile" onchange="handleEmptyReturnFile(this.files)" />
+              <div id="emptyReturnFileInfo" class="file-chip-list"></div>
+            </div>
+            <div class="field" style="margin-bottom:0;">
+              <label for="fDossierFiles">Joindre documents (BL, BAD, GUCE, reçu)</label>
+              <input type="file" id="fDossierFiles" multiple onchange="handleDossierFiles(this.files)" />
+              <div id="dossierFilesList" class="file-chip-list"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6. Évolution & Points du dossier -->
+        <div id="secEvolution" class="section-box">
+          <h3>6. Évolution du Dossier (De l'ouverture à la restitution / clôture)</h3>
+          <div class="grid-2" style="margin-bottom:10px;">
+            <div class="field" style="margin-bottom:0;">
+              <label for="fEvoStage">Nouvelle étape / Statut</label>
+              <input type="text" id="fEvoStage" placeholder="Ex: BAD validé GUCE / Sortie camion / Retour vide" />
+            </div>
+            <div class="field" style="margin-bottom:0;">
+              <label for="fEvoNote">Détail de l'action ou observation</label>
+              <input type="text" id="fEvoNote" placeholder="Ex: Conteneur restitué, visa de décharge obtenu" />
+            </div>
+          </div>
+          <button type="button" id="btnAddEvolution" class="sm primary" onclick="addEvolutionEntry()">+ Ajouter à l'évolution</button>
+          <div id="evolutionHistoryList" class="evolution-list"></div>
+        </div>
+
+        <div id="secPoints" class="section-box" style="margin-bottom:0;">
+          <h3>7. Points d'avancement (Bordereau PDF)</h3>
+          <div class="field" style="margin-bottom:0;">
+            <textarea id="fPoints" rows="3" placeholder="Ex:&#10;- BL et lieu de dépotage transmis&#10;- BAD / GUCE en cours&#10;- Enlèvement et restitution conteneurs"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button onclick="printSingleBordereauPdf()">📄 Imprimer / PDF Bordereau</button>
+        <button onclick="closeModal('dossierModal')">Annuler</button>
+        <button id="btnSaveDossier" onclick="saveDossier()" class="primary">Enregistrer le dossier</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL ADMINISTRATION -->
+  <div id="adminModal" class="modal-backdrop">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>🛡️ Administration — Agents &amp; Rôles (GEO SUIVI2)</h2>
+        <button onclick="closeModal('adminModal')" class="sm">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="section-box">
+          <h3>Agents &amp; Sessions actives</h3>
+          <div class="table-wrap" style="box-shadow:none;">
+            <table style="min-width:560px;">
+              <thead>
+                <tr>
+                  <th>Agent</th>
+                  <th>Identifiant</th>
+                  <th>Rôles</th>
+                  <th>État</th>
+                  <th>Dernière activité</th>
+                </tr>
+              </thead>
+              <tbody id="adminSessionsBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="section-box" style="margin-bottom:0;">
+          <h3>Attribution des rôles</h3>
+          <div id="adminUsersList"></div>
+          <hr style="border:none; border-top:1px solid var(--border); margin:14px 0;" />
+          <div class="grid-2">
+            <div class="field">
+              <label>Nom complet nouvel agent</label>
+              <input type="text" id="newAgentName" placeholder="Ex: Komi Agbé" />
+            </div>
+            <div class="field">
+              <label>Identifiant de connexion</label>
+              <input type="text" id="newAgentUser" placeholder="Ex: komi" />
+            </div>
+            <div class="field">
+              <label>Mot de passe</label>
+              <input type="text" id="newAgentPass" placeholder="Ex: pass123" />
+            </div>
+            <div class="field">
+              <label>Rôles attribués</label>
+              <div class="role-grid" id="newAgentRoles"></div>
+            </div>
+          </div>
+          <button onclick="createNewAgent()" class="primary sm">Ajouter l'agent</button>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button onclick="closeModal('adminModal')">Fermer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL PARAMÈTRES CAUTION PERMANENTE -->
+  <div id="settingsModal" class="modal-backdrop">
+    <div class="modal" style="max-width:560px;">
+      <div class="modal-header">
+        <h2>⚙️ Caution Permanente &amp; Réglages — GEO SUIVI2</h2>
+        <button onclick="closeModal('settingsModal')" class="sm">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="field">
+          <label for="settingCautionGlobalState">État global de la caution permanente</label>
+          <select id="settingCautionGlobalState">
+            <option value="ACTIVE">ACTIVE — Caution permanente opérationnelle</option>
+            <option value="SUSPENDUE">SUSPENDUE — Blocage / régularisation requise</option>
+            <option value="EN_REGULATION">EN RÉGULARISATION — Paiement / levée en cours</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="settingCautionDetail">Note de caution permanente (compagnie maritime, montant, référence)</label>
+          <textarea id="settingCautionDetail" rows="2" placeholder="Ex: Caution permanente Lomé — suivi règlements et restitutions TC"></textarea>
+        </div>
+        <div class="field" style="margin-bottom:0;">
+          <label for="settingContactEmail">E-mail de coordination / facturation</label>
+          <input type="email" id="settingContactEmail" placeholder="operations@geosuivi2.tg" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button onclick="closeModal('settingsModal')">Annuler</button>
+        <button onclick="saveSettings()" class="primary">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="printArea"></div>
+  <div id="toast" class="toast"></div>
+
+  <script>
+    const STORAGE_KEY = "GEO_SUIVI2_STATE_V1";
+    const CLOUD_CFG_KEY = "GEO_SUIVI2_CLOUD_CFG_V1";
+    const BROADCAST_CHANNEL_NAME = "GEO_SUIVI2_SYNC_CHANNEL_V1";
+
+    const AVAILABLE_ROLES = [
+      "ADMIN",
+      "SUPERVISEUR",
+      "AGENT_TRANSIT",
+      "AGENT_ECHANGE",
+      "AGENT_DDU_T1",
+      "AGENT_EXPLOITATION"
+    ];
+
+    const DEFAULT_CLOUD_CFG = {
+      enabled: true,
+      workspaceCode: "GEO-SUIVI2-LOME",
+      endpointUrl: "",
+      apiKey: "",
+      lastSyncAt: ""
+    };
+
+    const DEFAULT_STATE = {
+      updatedAt: 0,
+      settings: {
+        cautionGlobalState: "ACTIVE",
+        cautionDetail: "Suivi caution permanente Lomé, validation BAD / GUCE et restitutions conteneurs.",
+        contactEmail: "operations@geosuivi2.tg"
+      },
+      users: [
+        {
+          id: "u_admin",
+          name: "Administrateur Système",
+          username: "admin",
+          passwordHash: btoa("admin123"),
+          roles: ["ADMIN"],
+          online: false,
+          lastSeen: "Jamais connecté"
+        },
+        {
+          id: "u_sup",
+          name: "Superviseur GEO SUIVI2",
+          username: "superviseur",
+          passwordHash: btoa("sup123"),
+          roles: ["SUPERVISEUR"],
+          online: false,
+          lastSeen: "Jamais connecté"
+        },
+        {
+          id: "u_transit",
+          name: "Agent Transit Lomé",
+          username: "transit",
+          passwordHash: btoa("trans123"),
+          roles: ["AGENT_TRANSIT", "AGENT_ECHANGE"],
+          online: false,
+          lastSeen: "Jamais connecté"
+        }
+      ],
+      dossiers: [
+        {
+          id: "gs2_1",
+          repertoire: "GS200001",
+          bl: "TWN0987353",
+          blType: "TELEX_RELEASE",
+          client: "IMPORTATEUR HINTERLAND",
+          navire: "CMA CGM LOME",
+          lieuDepot: "HINTERLAND",
+          paysProvenance: "Chine",
+          destination: "Burkina Faso",
+          transportMode: "SUR_CAMION",
+          poids: "27 200 kg",
+          quantite: "2 x 40'HC",
+          circuit: "ROUGE",
+          statut: "Suivi caution permanente & restitution TC",
+          closed: false,
+          containers: ["CMAU4410921", "CMAU7720194"],
+          cautionDetention: {
+            cautionMode: "PERMANENTE_SUSPENDUE",
+            detentionStatus: "DETENTION_EN_COURS",
+            detentionAmount: "10 000 000 FCFA",
+            dateFinFranchise: new Date(Date.now() + 20 * 3600 * 1000).toISOString().slice(0, 16),
+            dateRetourPrevue: new Date(Date.now() + 2 * 86400 * 1000).toISOString().slice(0, 10),
+            guceRef: "GUCE-LOM-2026-091",
+            note: "Vérifier état caution permanente, règlement détention et autorisation restitution TC."
+          },
+          passation: {
+            bon: "BAD_VALIDE",
+            consigne: "Préciser le lieu de dépotage et la date de retour vide.",
+            truckAssignments: [{ truck: "TG-8910-MD", containers: "CMAU4410921, CMAU7720194", poids: "", quantite: "" }],
+            truckRequested: true
+          },
+          emptyReturn: { date: "", fileName: "" },
+          files: [],
+          evolutions: [
+            {
+              date: "25/11/2026 09:00",
+              stage: "Ouverture dossier BL",
+              note: "BL Telex Release enregistré, lieu de dépotage et caution renseignés",
+              author: "admin"
+            }
+          ],
+          points: "- Type de BL : Telex Release\n- Lieu de dépotage : Hinterland\n- Suivi caution permanente & restitution conteneurs"
+        },
+        {
+          id: "gs2_2",
+          repertoire: "GS200002",
+          bl: "MEDU8841205",
+          blType: "ORIGINAL",
+          client: "ETS TOGO LOGISTIQUE",
+          navire: "MSC AFRICA",
+          lieuDepot: "PIA",
+          paysProvenance: "Émirats arabes unis",
+          destination: "Lomé (PIA)",
+          transportMode: "DEPOTAGE",
+          poids: "19 500 kg",
+          quantite: "110 colis",
+          circuit: "BLEU",
+          statut: "Dépotage PIA en cours",
+          closed: false,
+          containers: ["MSCU3091827"],
+          cautionDetention: {
+            cautionMode: "PERMANENTE_ACTIVE",
+            detentionStatus: "RAS",
+            detentionAmount: "0 FCFA",
+            dateFinFranchise: "",
+            dateRetourPrevue: "",
+            guceRef: "GUCE-LOM-2026-104",
+            note: "BL Original validé via GUCE, dépotage PIA programmé."
+          },
+          passation: {
+            bon: "BAE",
+            consigne: "Dépotage PIA puis livraison locale.",
+            truckAssignments: [{ truck: "TG-2041-AK", containers: "", poids: "19 500 kg", quantite: "110 colis" }],
+            truckRequested: false
+          },
+          emptyReturn: { date: "", fileName: "" },
+          files: [],
+          evolutions: [],
+          points: "- BL Original vérifié\n- Dépotage à PIA planifié"
+        }
+      ],
+      sessionUserId: null
+    };
+
+    function cloneDefaultState() {
+      return JSON.parse(JSON.stringify(DEFAULT_STATE));
+    }
+
+    function loadCloudCfg() {
+      try {
+        const raw = localStorage.getItem(CLOUD_CFG_KEY);
+        if (!raw) return { ...DEFAULT_CLOUD_CFG };
+        return { ...DEFAULT_CLOUD_CFG, ...JSON.parse(raw) };
+      } catch (e) {
+        return { ...DEFAULT_CLOUD_CFG };
+      }
+    }
+
+    let cloudCfg = loadCloudCfg();
+
+    function saveCloudCfg() {
+      try {
+        localStorage.setItem(CLOUD_CFG_KEY, JSON.stringify(cloudCfg));
+      } catch (e) {}
+    }
+
+    function normalizeLoadedState(parsed) {
+      const def = cloneDefaultState();
+      return {
+        updatedAt: Number(parsed?.updatedAt) || 0,
+        settings: { ...def.settings, ...(parsed?.settings || {}) },
+        users: Array.isArray(parsed?.users) && parsed.users.length ? parsed.users : def.users,
+        dossiers: Array.isArray(parsed?.dossiers) && parsed.dossiers.length ? parsed.dossiers : def.dossiers,
+        sessionUserId: parsed?.sessionUserId || null
+      };
+    }
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return cloneDefaultState();
+        return normalizeLoadedState(JSON.parse(raw));
+      } catch (e) {
+        return cloneDefaultState();
+      }
+    }
+
+    let state = loadState();
+    let selectedIds = new Set();
+    let workingEvolutions = [];
+    let workingFiles = [];
+    let workingEmptyReturnFile = "";
+    let workingTruckAssignments = [];
+    let broadcastChan = null;
+
+    try {
+      if ("BroadcastChannel" in window) {
+        broadcastChan = new BroadcastChannel(BROADCAST_CHANNEL_NAME);
+        broadcastChan.onmessage = function (ev) {
+          if (ev.data && ev.data.type === "STATE_UPDATED" && ev.data.payload) {
+            const incoming = normalizeLoadedState(ev.data.payload);
+            if ((incoming.updatedAt || 0) >= (state.updatedAt || 0)) {
+              const keepSession = state.sessionUserId;
+              state = { ...incoming, sessionUserId: keepSession };
+              localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+              renderApp();
+            }
+          }
+        };
+      }
+    } catch (e) {}
+
+    window.addEventListener("storage", function (ev) {
+      if (ev.key === STORAGE_KEY && ev.newValue) {
+        try {
+          const incoming = normalizeLoadedState(JSON.parse(ev.newValue));
+          const keepSession = state.sessionUserId;
+          state = { ...incoming, sessionUserId: keepSession };
+          renderApp();
+        } catch (e) {}
+      }
+    });
+
+    function getSharedPayloadSnapshot() {
+      const copy = JSON.parse(JSON.stringify(state));
+      delete copy.sessionUserId;
+      return copy;
+    }
+
+    function getRemoteEndpointForWorkspace() {
+      if (cloudCfg.endpointUrl && cloudCfg.endpointUrl.trim()) {
+        return cloudCfg.endpointUrl.trim();
+      }
+      const code = encodeURIComponent((cloudCfg.workspaceCode || "GEO-SUIVI2-LOME").trim() || "GEO-SUIVI2-LOME");
+      return `https://kvdb.io/GEO_SUIVI2_SHARED_KV/${code}`;
+    }
+
+    async function pushCloudNow(silent = false) {
+      if (!cloudCfg.enabled) return;
+      const url = getRemoteEndpointForWorkspace();
+      const headers = { "Content-Type": "application/json" };
+      if (cloudCfg.apiKey && cloudCfg.apiKey.trim()) {
+        headers["Authorization"] = `Bearer ${cloudCfg.apiKey.trim()}`;
+      }
+      try {
+        const res = await fetch(url, {
+          method: "POST",
+          headers,
+          body: JSON.stringify(getSharedPayloadSnapshot())
+        });
+        if (res.ok) {
+          cloudCfg.lastSyncAt = new Date().toLocaleString("fr-FR");
+          saveCloudCfg();
+          updateCloudUi();
+          if (!silent) showToast("Données synchronisées en ligne.");
+        } else if (!silent) {
+          showToast("Synchronisation locale/inter-onglets active.");
+        }
+      } catch (err) {
+        if (!silent) {
+          showToast("Sauvegarde locale & inter-onglets effectuée.");
+        }
+      }
+    }
+
+    async function pullCloudNow(silent = false) {
+      if (!cloudCfg.enabled) return;
+      const url = getRemoteEndpointForWorkspace();
+      const headers = {};
+      if (cloudCfg.apiKey && cloudCfg.apiKey.trim()) {
+        headers["Authorization"] = `Bearer ${cloudCfg.apiKey.trim()}`;
+      }
+      try {
+        const res = await fetch(url, { method: "GET", headers });
+        if (!res.ok) {
+          if (!silent) showToast("Aucune donnée distante trouvée pour le moment.");
+          return;
+        }
+        const remoteData = await res.json();
+        if (remoteData && Array.isArray(remoteData.dossiers)) {
+          const normalized = normalizeLoadedState(remoteData);
+          if ((normalized.updatedAt || 0) > (state.updatedAt || 0)) {
+            const keepSession = state.sessionUserId;
+            state = { ...normalized, sessionUserId: keepSession };
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+            renderApp();
+            if (!silent) showToast("Données synchronisées depuis l'espace partagé !");
+          } else if (!silent) {
+            showToast("Vos données sont déjà à jour.");
+          }
+        }
+        cloudCfg.lastSyncAt = new Date().toLocaleString("fr-FR");
+        saveCloudCfg();
+        updateCloudUi();
+      } catch (err) {
+        if (!silent) {
+          showToast("Impossible de joindre le serveur partagé.");
+        }
+      }
+    }
+
+    function saveState() {
+      state.updatedAt = Date.now();
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (e) {}
+      try {
+        if (broadcastChan) {
+          broadcastChan.postMessage({ type: "STATE_UPDATED", payload: getSharedPayloadSnapshot() });
+        }
+      } catch (e) {}
+      if (cloudCfg.enabled) {
+        pushCloudNow(true);
+      }
+    }
+
+    function resetStorageSession() {
+      try {
+        localStorage.removeItem(STORAGE_KEY);
+      } catch (e) {}
+      state = cloneDefaultState();
+      selectedIds.clear();
+      document.getElementById("loginError").style.display = "none";
+      document.getElementById("loginUsername").value = "admin";
+      document.getElementById("loginPassword").value = "admin123";
+      showToast("Cache local réinitialisé.");
+    }
+
+    function showToast(msg) {
+      const el = document.getElementById("toast");
+      if (!el) return;
+      el.textContent = msg;
+      el.style.display = "block";
+      clearTimeout(window.__toastTimer);
+      window.__toastTimer = setTimeout(() => {
+        el.style.display = "none";
+      }, 3600);
+    }
+
+    function escapeHtml(str) {
+      return String(str ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function formatBlTypeLabel(type) {
+      if (type === "TELEX_RELEASE") return "Telex Release";
+      if (type === "SEA_WAYBILL") return "Sea Waybill";
+      return "Original";
+    }
+
+    function formatLieuDepotLabel(lieu) {
+      if (lieu === "PIA") return "PIA (Adétikopé)";
+      if (lieu === "HINTERLAND") return "Hinterland";
+      if (lieu === "CFS") return "CFS";
+      if (lieu === "MAD") return "Magasins (MAD)";
+      return "Ville (Lomé)";
+    }
+
+    function formatCautionModeLabel(mode) {
+      if (mode === "PERMANENTE_SUSPENDUE") return "Caution perm. suspendue";
+      if (mode === "LEVEE_EN_COURS") return "Levée / règlement en cours";
+      if (mode === "CAUTION_PONCTUELLE") return "Caution ponctuelle";
+      return "Caution perm. active";
+    }
+
+    function updateCloudUi() {
+      const badge = document.getElementById("cloudStatusBadge");
+      const banner = document.getElementById("cloudBanner");
+      const logEl = document.getElementById("cloudSyncLog");
+      const ws = cloudCfg.workspaceCode || "GEO-SUIVI2-LOME";
+
+      if (badge) {
+        if (cloudCfg.enabled) {
+          badge.className = "sync-pill online";
+          badge.textContent = `☁️ Partagé : ${ws}`;
+        } else {
+          badge.className = "sync-pill local";
+          badge.textContent = "● Mode Local";
+        }
+      }
+
+      if (banner) {
+        if (cloudCfg.enabled) {
+          banner.className = "cloud-banner connected";
+          banner.innerHTML = `
+            <div>
+              <strong>☁️ ESPACE PARTAGÉ GEO SUIVI2 (${escapeHtml(ws)}) :</strong> Synchronisation active entre postes et appareils. ${cloudCfg.lastSyncAt ? `<em>(Dernière synchro : ${escapeHtml(cloudCfg.lastSyncAt)})</em>` : ""}
+            </div>
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+              <button type="button" class="sm" onclick="pullCloudNow()">↻ Actualiser</button>
+              <button type="button" class="sm" onclick="openCloudSyncModal()">Paramètres synchro</button>
+            </div>
+          `;
+        } else {
+          banner.className = "cloud-banner";
+          banner.innerHTML = `
+            <div>
+              <strong>⚠️ MODE LOCAL UNIQUEMENT :</strong> Activez la synchronisation ou exportez/importez le JSON pour partager entre appareils.
+            </div>
+            <button type="button" class="primary sm" onclick="openCloudSyncModal()">Activer la synchro</button>
+          `;
+        }
+      }
+
+      if (logEl) {
+        logEl.textContent = `Espace : ${ws} • Dernière synchronisation : ${cloudCfg.lastSyncAt || "jamais"}`;
+      }
+    }
+
+    function openCloudSyncModal() {
+      document.getElementById("cloudEnabled").value = cloudCfg.enabled ? "true" : "false";
+      document.getElementById("cloudWorkspaceCode").value = cloudCfg.workspaceCode || "GEO-SUIVI2-LOME";
+      document.getElementById("cloudEndpointUrl").value = cloudCfg.endpointUrl || "";
+      document.getElementById("cloudApiKey").value = cloudCfg.apiKey || "";
+      updateCloudUi();
+      document.getElementById("cloudSyncModal").classList.add("open");
+    }
+
+    async function saveAndSyncCloudConfig() {
+      cloudCfg.enabled = document.getElementById("cloudEnabled").value === "true";
+      cloudCfg.workspaceCode = (document.getElementById("cloudWorkspaceCode").value || "GEO-SUIVI2-LOME").trim();
+      cloudCfg.endpointUrl = (document.getElementById("cloudEndpointUrl").value || "").trim();
+      cloudCfg.apiKey = (document.getElementById("cloudApiKey").value || "").trim();
+      saveCloudCfg();
+      updateCloudUi();
+      if (cloudCfg.enabled) {
+        await pullCloudNow(true);
+        await pushCloudNow(false);
+      } else {
+        showToast("Synchronisation en ligne désactivée.");
+      }
+    }
+
+    function exportStateJsonFile() {
+      const dataStr = JSON.stringify(getSharedPayloadSnapshot(), null, 2);
+      const blob = new Blob([dataStr], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `geo-suivi2-${(cloudCfg.workspaceCode || "lome").toLowerCase()}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast("Sauvegarde JSON exportée.");
+    }
+
+    function importStateJsonFile(fileList) {
+      if (!fileList || !fileList.length) return;
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        try {
+          const parsed = JSON.parse(e.target.result);
+          const normalized = normalizeLoadedState(parsed);
+          const keepSession = state.sessionUserId;
+          state = { ...normalized, sessionUserId: keepSession, updatedAt: Date.now() };
+          saveState();
+          renderApp();
+          showToast("Données JSON importées !");
+        } catch (err) {
+          showToast("Fichier JSON invalide.");
+        }
+      };
+      reader.readAsText(fileList[0]);
+    }
+
+    function getCurrentUser() {
+      return state.users.find((u) => u.id === state.sessionUserId) || null;
+    }
+
+    function hasRole(user, role) {
+      return !!(user && Array.isArray(user.roles) && user.roles.includes(role));
+    }
+
+    function isAdmin(user) {
+      return hasRole(user, "ADMIN");
+    }
+
+    function isSupervisor(user) {
+      return hasRole(user, "SUPERVISEUR") || hasRole(user, "ADMIN");
+    }
+
+    function getPermissions(user) {
+      const admin = isAdmin(user);
+      const sup = hasRole(user, "SUPERVISEUR");
+      const fullOps = admin || sup;
+      return {
+        fullOps,
+        canCreateDossier: fullOps || hasRole(user, "AGENT_TRANSIT") || hasRole(user, "AGENT_ECHANGE") || hasRole(user, "AGENT_DDU_T1") || hasRole(user, "AGENT_EXPLOITATION"),
+        canEditGeneral: fullOps || hasRole(user, "AGENT_TRANSIT") || hasRole(user, "AGENT_EXPLOITATION") || hasRole(user, "AGENT_ECHANGE"),
+        canEditContainers: fullOps || hasRole(user, "AGENT_TRANSIT") || hasRole(user, "AGENT_EXPLOITATION"),
+        canEditCautionDetention: fullOps || hasRole(user, "AGENT_TRANSIT") || hasRole(user, "AGENT_ECHANGE") || hasRole(user, "AGENT_DDU_T1"),
+        canEditPassation: fullOps || hasRole(user, "AGENT_EXPLOITATION") || hasRole(user, "AGENT_TRANSIT"),
+        canEditEmptyReturn: fullOps || hasRole(user, "AGENT_EXPLOITATION") || hasRole(user, "AGENT_TRANSIT"),
+        canEditEvolution: !!user,
+        canEditPoints: fullOps || hasRole(user, "AGENT_TRANSIT") || hasRole(user, "AGENT_EXPLOITATION")
+      };
+    }
+
+    function getDossierAlerts(d) {
+      if (!d || d.closed) return [];
+      const alerts = [];
+      const now = Date.now();
+      const limit72h = 72 * 3600 * 1000;
+
+      if (d.cautionDetention?.cautionMode === "PERMANENTE_SUSPENDUE") {
+        alerts.push(`Caution perm. suspendue (${d.repertoire})`);
+      }
+      if (d.cautionDetention?.detentionStatus === "DETENTION_EN_COURS" || d.cautionDetention?.detentionStatus === "ALERTE_72H") {
+        alerts.push(`Détention / Alerte (${d.repertoire})`);
+      }
+      const finStr = d.cautionDetention?.dateFinFranchise;
+      if (finStr) {
+        const ts = new Date(finStr).getTime();
+        if (!Number.isNaN(ts) && ts - now <= limit72h) {
+          alerts.push(`Échéance < 72h (${d.repertoire})`);
+        }
+      }
+      return alerts;
+    }
+
+    function isDossierWaitingForTruck(d) {
+      return !!(d && !d.closed && d.passation && d.passation.truckRequested);
+    }
+
+    async function handleLogin(event) {
+      if (event) event.preventDefault();
+      const errEl = document.getElementById("loginError");
+      errEl.style.display = "none";
+
+      if (cloudCfg.enabled) {
+        await pullCloudNow(true);
+      }
+
+      const usernameInput = (document.getElementById("loginUsername").value || "").trim().toLowerCase();
+      const passwordInput = document.getElementById("loginPassword").value || "";
+
+      if (!usernameInput || !passwordInput) {
+        errEl.textContent = "Veuillez renseigner l'identifiant et le mot de passe.";
+        errEl.style.display = "block";
+        return;
+      }
+
+      const expectedHash = btoa(passwordInput);
+      const user = state.users.find(
+        (u) => String(u.username || "").trim().toLowerCase() === usernameInput && u.passwordHash === expectedHash
+      );
+
+      if (!user) {
+        errEl.textContent = "Identifiant ou mot de passe incorrect. (Par défaut : admin / admin123)";
+        errEl.style.display = "block";
+        return;
+      }
+
+      user.online = true;
+      user.lastSeen = new Date().toLocaleString("fr-FR");
+      state.sessionUserId = user.id;
+      saveState();
+      renderApp();
+      showToast("Bienvenue, " + user.name);
+    }
+
+    function logout() {
+      const user = getCurrentUser();
+      if (user) {
+        user.online = false;
+        user.lastSeen = new Date().toLocaleString("fr-FR");
+      }
+      state.sessionUserId = null;
+      selectedIds.clear();
+      saveState();
+      document.getElementById("appScreen").style.display = "none";
+      document.getElementById("loginScreen").style.display = "flex";
+      document.getElementById("loginPassword").value = "";
+    }
+
+    function renderApp() {
+      const user = getCurrentUser();
+      if (!user) {
+        document.getElementById("appScreen").style.display = "none";
+        document.getElementById("loginScreen").style.display = "flex";
+        return;
+      }
+
+      const perms = getPermissions(user);
+      document.getElementById("loginScreen").style.display = "none";
+      document.getElementById("appScreen").style.display = "block";
+
+      document.getElementById("currentUserLabel").textContent = `${user.name} (${user.username})`;
+      document.getElementById("currentRolesLabel").textContent = `[${user.roles.join(", ")}]`;
+      document.getElementById("btnAdminPanel").style.display = isAdmin(user) ? "inline-block" : "none";
+      document.getElementById("btnSettings").style.display = isSupervisor(user) ? "inline-block" : "none";
+      document.getElementById("btnNewDossier").style.display = perms.canCreateDossier ? "inline-block" : "none";
+
+      updateCloudUi();
+      renderCautionBanner();
+      renderAlertBanner();
+      renderTruckBanner(user);
+      renderKpis();
+      renderDossiers();
+    }
+
+    function renderCautionBanner() {
+      const banner = document.getElementById("cautionBanner");
+      const cState = state.settings?.cautionGlobalState || "ACTIVE";
+      const detail = state.settings?.cautionDetail || "";
+      if (cState === "SUSPENDUE") {
+        banner.className = "caution-banner";
+        banner.innerHTML = `
+          <div><strong>🛑 CAUTION PERMANENTE SUSPENDUE :</strong> ${escapeHtml(detail || "Vérifiez les détentions / restitutions de conteneurs avant nouvel engagement.")}</div>
+          <span class="pill rouge">SUSPENDUE</span>
+        `;
+      } else if (cState === "EN_REGULATION") {
+        banner.className = "truck-banner";
+        banner.innerHTML = `
+          <div><strong>⏳ CAUTION PERMANENTE EN RÉGULARISATION :</strong> ${escapeHtml(detail || "Paiement ou levée de suspension en cours.")}</div>
+          <span class="pill jaune">EN RÉGULARISATION</span>
+        `;
+      } else {
+        banner.className = "cloud-banner connected";
+        banner.innerHTML = `
+          <div><strong>✅ CAUTION PERMANENTE ACTIVE :</strong> ${escapeHtml(detail || "Opérations portuaires Lomé et hinterland actives.")}</div>
+          <span class="pill vert">ACTIVE</span>
+        `;
+      }
+    }
+
+    function renderAlertBanner() {
+      const banner = document.getElementById("alertBanner");
+      const allAlerts = state.dossiers.flatMap((d) => getDossierAlerts(d));
+      if (!allAlerts.length) {
+        banner.style.display = "none";
+        return;
+      }
+      banner.style.display = "flex";
+      banner.innerHTML = `
+        <div><strong>⚠️ ALERTES DOSSIERS / DÉTENTION / ÉCHÉANCE :</strong> ${escapeHtml(allAlerts.join(" • "))}</div>
+        <span class="pill rouge">${allAlerts.length} alerte(s)</span>
+      `;
+    }
+
+    function renderTruckBanner(user) {
+      const banner = document.getElementById("truckBanner");
+      const waiting = state.dossiers.filter((d) => isDossierWaitingForTruck(d));
+      if (!waiting.length || !isSupervisor(user)) {
+        banner.style.display = "none";
+        return;
+      }
+      banner.style.display = "flex";
+      banner.innerHTML = `
+        <div><strong>🚛 SUPERVISEUR — EN ATTENTE DE CAMION :</strong> ${waiting.map((d) => `${escapeHtml(d.repertoire)} (${escapeHtml(d.bl || "-")})`).join(" • ")}</div>
+        <span class="pill jaune">${waiting.length} en attente</span>
+      `;
+    }
+
+    function renderKpis() {
+      const total = state.dossiers.length;
+      const openCount = state.dossiers.filter((d) => !d.closed).length;
+      const alertCount = state.dossiers.flatMap((d) => getDossierAlerts(d)).length;
+      const detentionCount = state.dossiers.filter((d) => !d.closed && d.cautionDetention?.detentionStatus === "DETENTION_EN_COURS").length;
+      const returnedCount = state.dossiers.filter((d) => !!(d.emptyReturn && d.emptyReturn.date)).length;
+
+      document.getElementById("kpiContainer").innerHTML = `
+        <div class="kpi-card">
+          <div class="kpi-label">Total Dossiers</div>
+          <div class="kpi-value">${total}</div>
+          <div class="kpi-sub">Actifs : ${openCount} • Clôturés : ${total - openCount}</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Alertes Actives</div>
+          <div class="kpi-value" style="color:var(--danger);">${alertCount}</div>
+          <div class="kpi-sub">Caution / Détention / &lt;72h</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Détentions En Cours</div>
+          <div class="kpi-value" style="color:var(--warning);">${detentionCount}</div>
+          <div class="kpi-sub">Suivi conteneurs</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Retours Vides</div>
+          <div class="kpi-value" style="color:var(--success);">${returnedCount}</div>
+          <div class="kpi-sub">Restitutions renseignées</div>
+        </div>
+      `;
+    }
+
+    function getFilteredDossiers() {
+      const q = (document.getElementById("searchInput").value || "").trim().toLowerCase();
+      const circuit = document.getElementById("circuitFilter").value;
+      const lieu = document.getElementById("lieuDepotFilter").value;
+      const blType = document.getElementById("blTypeFilter").value;
+
+      return state.dossiers.filter((d) => {
+        if (circuit !== "TOUS" && d.circuit !== circuit) return false;
+        if (lieu !== "TOUS" && (d.lieuDepot || "VILLE") !== lieu) return false;
+        if (blType !== "TOUS" && (d.blType || "ORIGINAL") !== blType) return false;
+        if (!q) return true;
+        const hay = `${d.repertoire} ${d.bl} ${formatBlTypeLabel(d.blType)} ${d.client} ${d.navire} ${formatLieuDepotLabel(d.lieuDepot)} ${d.destination} ${d.statut} ${formatCautionModeLabel(d.cautionDetention?.cautionMode)} ${(d.containers || []).join(" ")}`.toLowerCase();
+        return hay.includes(q);
+      });
+    }
+
+    function renderDossiers() {
+      const rows = getFilteredDossiers();
+      const tbody = document.getElementById("dossiersTableBody");
+
+      if (!rows.length) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:24px; color:var(--muted);">Aucun dossier trouvé.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = rows.map((d) => {
+        const circuitClass = (d.circuit || "VERT").toLowerCase();
+        const checked = selectedIds.has(d.id) ? "checked" : "";
+        const cCount = (d.containers || []).length;
+        const alerts = getDossierAlerts(d);
+        const cautionLabel = formatCautionModeLabel(d.cautionDetention?.cautionMode);
+        const detAmount = d.cautionDetention?.detentionAmount || "";
+
+        return `
+          <tr>
+            <td><input type="checkbox" ${checked} onchange="toggleSelect('${d.id}', this.checked)" /></td>
+            <td>
+              <strong>${escapeHtml(d.repertoire)}</strong>
+              ${d.closed ? '<span class="pill cloture" style="margin-left:4px;">Clôturé</span>' : ""}
+              ${alerts.length ? '<span class="pill rouge" style="margin-left:4px;">Alerte</span>' : ""}
+            </td>
+            <td>
+              <strong>${escapeHtml(d.bl)}</strong>
+              <div style="font-size:11.5px; color:var(--muted);">${escapeHtml(formatBlTypeLabel(d.blType))}</div>
+            </td>
+            <td>
+              ${escapeHtml(d.client)}
+              <div style="font-size:11.5px; color:var(--muted);">${escapeHtml(d.navire || "-")}</div>
+            </td>
+            <td>
+              <strong>${escapeHtml(formatLieuDepotLabel(d.lieuDepot))}</strong>
+              <div style="font-size:11.5px; color:var(--muted);">${escapeHtml(d.destination || "-")}</div>
+            </td>
+            <td>
+              <div style="font-size:12.5px;"><strong>${escapeHtml(cautionLabel)}</strong></div>
+              <div style="font-size:11.5px; color:var(--muted);">${cCount} conteneur(s)${detAmount ? " • " + escapeHtml(detAmount) : ""}</div>
+            </td>
+            <td>
+              <span class="pill ${circuitClass}">${escapeHtml(d.circuit)}</span> ${escapeHtml(d.statut)}
+              ${d.emptyReturn?.date ? `<div style="font-size:11.5px; color:var(--success);">Retour vide : ${escapeHtml(d.emptyReturn.date)}</div>` : ""}
+            </td>
+            <td>
+              <div class="row-actions">
+                <button class="sm" onclick="openDossierModal('${d.id}')">Ouvrir / Suivi</button>
+                <button class="sm" onclick="exportSingleBordereauPdf('${d.id}')">Bordereau PDF</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    function toggleSelect(id, checked) {
+      if (checked) selectedIds.add(id);
+      else selectedIds.delete(id);
+    }
+
+    function toggleSelectAll(checked) {
+      const visible = getFilteredDossiers();
+      selectedIds.clear();
+      if (checked) {
+        visible.forEach((d) => selectedIds.add(d.id));
+      }
+      renderDossiers();
+    }
+
+    function setSectionLock(sectionId, allowed) {
+      const sec = document.getElementById(sectionId);
+      if (!sec) return;
+      sec.classList.toggle("locked-section", !allowed);
+      sec.querySelectorAll("input, select, textarea, button").forEach((el) => {
+        el.disabled = !allowed;
+      });
+    }
+
+    function applyRolePermissionsToModal() {
+      const perms = getPermissions(getCurrentUser());
+      setSectionLock("secGeneral", perms.canEditGeneral);
+      setSectionLock("secContainers", perms.canEditContainers);
+      setSectionLock("secCautionDetention", perms.canEditCautionDetention);
+      setSectionLock("secPassation", perms.canEditPassation);
+      setSectionLock("emptyReturnSection", perms.canEditEmptyReturn);
+      setSectionLock("secEvolution", perms.canEditEvolution);
+      setSectionLock("secPoints", perms.canEditPoints);
+
+      const anyEditable =
+        perms.canEditGeneral ||
+        perms.canEditContainers ||
+        perms.canEditCautionDetention ||
+        perms.canEditPassation ||
+        perms.canEditEmptyReturn ||
+        perms.canEditEvolution ||
+        perms.canEditPoints;
+
+      document.getElementById("btnSaveDossier").disabled = !anyEditable;
+      document.getElementById("badgeGeneralAccess").textContent = perms.canEditGeneral ? "Édition autorisée" : "Lecture seule";
+    }
+
+    function renderContainerFields(values = []) {
+      const list = Array.isArray(values) && values.length ? values : [""];
+      const grid = document.getElementById("containersFieldsGrid");
+      grid.innerHTML = list.map((val, idx) => `
+        <div class="container-slot">
+          <label for="containerInput_${idx}">Conteneur ${idx + 1}</label>
+          <input
+            type="text"
+            id="containerInput_${idx}"
+            class="container-field-input"
+            value="${escapeHtml(val)}"
+            placeholder="Ex: CMAU1234567"
+            oninput="handleContainerInput(${idx}, this.value)"
+            onpaste="handleContainerPaste(event, ${idx})"
+          />
+        </div>
+      `).join("");
+    }
+
+    function addContainerField(initialValue = "") {
+      const current = getContainerFieldValues();
+      current.push(initialValue);
+      renderContainerFields(current);
+      applyRolePermissionsToModal();
+      const inputs = document.querySelectorAll(".container-field-input");
+      if (inputs.length) inputs[inputs.length - 1].focus();
+    }
+
+    function getContainerFieldValues() {
+      return Array.from(document.querySelectorAll(".container-field-input")).map((el) => el.value.trim().toUpperCase());
+    }
+
+    function extractContainers4L7N(rawText) {
+      const upper = String(rawText || "").toUpperCase();
+      const matches = upper.match(/[A-Z]{4}\d{7}/g) || [];
+      return Array.from(new Set(matches));
+    }
+
+    function handleContainerPaste(event, index) {
+      if (index !== 0) return;
+      const clipboardData = event.clipboardData || window.clipboardData;
+      if (!clipboardData) return;
+      const pastedText = clipboardData.getData("text") || "";
+      const extracted = extractContainers4L7N(pastedText);
+      if (extracted.length > 1) {
+        event.preventDefault();
+        renderContainerFields(extracted);
+        applyRolePermissionsToModal();
+        showToast(`${extracted.length} conteneurs répartis dans leurs champs.`);
+      }
+    }
+
+    function handleContainerInput(index, value) {
+      if (index !== 0) return;
+      const extracted = extractContainers4L7N(value);
+      if (extracted.length > 1) {
+        renderContainerFields(extracted);
+        applyRolePermissionsToModal();
+        showToast(`${extracted.length} conteneurs répartis dans leurs champs.`);
+      }
+    }
+
+    function handleDossierFiles(fileList) {
+      if (!fileList || !fileList.length) return;
+      const names = Array.from(fileList).map((f) => f.name);
+      workingFiles = Array.from(new Set([...workingFiles, ...names]));
+      renderDossierFiles();
+      showToast(`${names.length} fichier(s) joint(s).`);
+    }
+
+    function removeDossierFile(index) {
+      workingFiles.splice(index, 1);
+      renderDossierFiles();
+    }
+
+    function renderDossierFiles() {
+      const el = document.getElementById("dossierFilesList");
+      if (!el) return;
+      if (!workingFiles.length) {
+        el.innerHTML = "";
+        return;
+      }
+      el.innerHTML = workingFiles.map((fname, idx) => `
+        <span class="file-chip">
+          📎 ${escapeHtml(fname)}
+          <button type="button" class="sm" style="padding:1px 5px;" onclick="removeDossierFile(${idx})">✕</button>
+        </span>
+      `).join("");
+    }
+
+    function toggleTruckSections() {
+      const mode = document.getElementById("fTransportMode").value;
+      document.getElementById("surCamionSection").style.display = mode === "SUR_CAMION" ? "block" : "none";
+      document.getElementById("depotageSection").style.display = mode === "DEPOTAGE" ? "block" : "none";
+    }
+
+    function addTruckAssignmentRow(mode) {
+      workingTruckAssignments.push({
+        mode: mode || document.getElementById("fTransportMode").value,
+        truck: "",
+        containers: "",
+        poids: "",
+        quantite: ""
+      });
+      renderTruckAssignmentRows();
+      applyRolePermissionsToModal();
+    }
+
+    function removeTruckAssignmentRow(idx) {
+      workingTruckAssignments.splice(idx, 1);
+      renderTruckAssignmentRows();
+      applyRolePermissionsToModal();
+    }
+
+    function renderTruckAssignmentRows() {
+      const mode = document.getElementById("fTransportMode").value;
+      const targetId = mode === "DEPOTAGE" ? "depotageRows" : "surCamionRows";
+      const container = document.getElementById(targetId);
+      if (!container) return;
+
+      if (!workingTruckAssignments.length) {
+        container.innerHTML = `<div style="font-size:12px; color:var(--muted); margin-top:6px;">Aucun camion affecté pour le moment.</div>`;
+        return;
+      }
+
+      container.innerHTML = workingTruckAssignments.map((row, idx) => {
+        if (mode === "DEPOTAGE") {
+          return `
+            <div class="grid-3" style="margin-top:8px; align-items:end;">
+              <div class="field" style="margin-bottom:0;">
+                <label>Camion</label>
+                <input type="text" value="${escapeHtml(row.truck)}" placeholder="Ex: TG-2041-AK" oninput="workingTruckAssignments[${idx}].truck = this.value" />
+              </div>
+              <div class="field" style="margin-bottom:0;">
+                <label>Poids attribué</label>
+                <input type="text" value="${escapeHtml(row.poids)}" placeholder="Ex: 10 000 kg" oninput="workingTruckAssignments[${idx}].poids = this.value" />
+              </div>
+              <div class="field" style="margin-bottom:0;">
+                <label>Quantité attribuée</label>
+                <div style="display:flex; gap:6px;">
+                  <input type="text" value="${escapeHtml(row.quantite)}" placeholder="Ex: 50 colis" oninput="workingTruckAssignments[${idx}].quantite = this.value" />
+                  <button type="button" class="sm danger" onclick="removeTruckAssignmentRow(${idx})">✕</button>
+                </div>
+              </div>
+            </div>
+          `;
+        }
+        return `
+          <div class="grid-2" style="margin-top:8px; align-items:end;">
+            <div class="field" style="margin-bottom:0;">
+              <label>Camion</label>
+              <input type="text" value="${escapeHtml(row.truck)}" placeholder="Ex: TG-8910-MD" oninput="workingTruckAssignments[${idx}].truck = this.value" />
+            </div>
+            <div class="field" style="margin-bottom:0;">
+              <label>Conteneur(s) affecté(s)</label>
+              <div style="display:flex; gap:6px;">
+                <input type="text" value="${escapeHtml(row.containers)}" placeholder="Ex: CMAU4410921" oninput="workingTruckAssignments[${idx}].containers = this.value.toUpperCase()" />
+                <button type="button" class="sm danger" onclick="removeTruckAssignmentRow(${idx})">✕</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function renderTruckDemandPreview() {
+      const checked = document.getElementById("fManTruckRequested").checked;
+      document.getElementById("truckRequestBadge").style.display = checked ? "inline-block" : "none";
+    }
+
+    function handleEmptyReturnFile(fileList) {
+      if (!fileList || !fileList.length) return;
+      workingEmptyReturnFile = fileList[0].name;
+      renderEmptyReturnFile();
+      showToast("Bordereau de retour vide joint : " + workingEmptyReturnFile);
+    }
+
+    function renderEmptyReturnFile() {
+      const el = document.getElementById("emptyReturnFileInfo");
+      if (!el) return;
+      el.innerHTML = workingEmptyReturnFile
+        ? `<span class="file-chip">📄 <strong>${escapeHtml(workingEmptyReturnFile)}</strong></span>`
+        : "";
+    }
+
+    function triggerEmptyReturnAction() {
+      const dateInput = document.getElementById("fEmptyReturnDate");
+      if (!dateInput.value) {
+        dateInput.value = new Date().toISOString().slice(0, 10);
+      }
+      workingEvolutions.unshift({
+        date: new Date().toLocaleString("fr-FR"),
+        stage: "Retour vide",
+        note: `Retour vide enregistré le ${dateInput.value}${workingEmptyReturnFile ? " (pièce : " + workingEmptyReturnFile + ")" : ""}`,
+        author: getCurrentUser()?.username || "agent"
+      });
+      renderEvolutionList();
+      showToast("Retour vide enregistré.");
+    }
+
+    function renderEvolutionList() {
+      const box = document.getElementById("evolutionHistoryList");
+      if (!workingEvolutions.length) {
+        box.innerHTML = `<div style="font-size:12.5px; color:var(--muted);">Aucune évolution enregistrée pour le moment.</div>`;
+        return;
+      }
+      box.innerHTML = workingEvolutions.map((ev) => `
+        <div class="evolution-item">
+          <div class="evolution-meta">
+            <strong>${escapeHtml(ev.stage || "Mise à jour")}</strong>
+            <span>${escapeHtml(ev.date || "")} ${ev.author ? "• " + escapeHtml(ev.author) : ""}</span>
+          </div>
+          <div>${escapeHtml(ev.note || "")}</div>
+        </div>
+      `).join("");
+    }
+
+    function addEvolutionEntry() {
+      const stage = (document.getElementById("fEvoStage").value || "").trim();
+      const note = (document.getElementById("fEvoNote").value || "").trim();
+      if (!stage && !note) {
+        showToast("Saisissez une étape ou une observation.");
+        return;
+      }
+      const user = getCurrentUser();
+      const perms = getPermissions(user);
+      workingEvolutions.unshift({
+        date: new Date().toLocaleString("fr-FR"),
+        stage: stage || (document.getElementById("fStatut").value || "").trim() || "Suivi",
+        note: note || "Étape renseignée",
+        author: user ? user.username : "agent"
+      });
+      if (stage && perms.canEditGeneral) {
+        document.getElementById("fStatut").value = stage;
+      }
+      document.getElementById("fEvoStage").value = "";
+      document.getElementById("fEvoNote").value = "";
+      renderEvolutionList();
+      showToast("Évolution ajoutée.");
+    }
+
+    function openDossierModal(id = null) {
+      const modal = document.getElementById("dossierModal");
+      const user = getCurrentUser();
+      document.getElementById("fEvoStage").value = "";
+      document.getElementById("fEvoNote").value = "";
+
+      if (!id) {
+        const nextNum = String(state.dossiers.length + 1).padStart(5, "0");
+        document.getElementById("dossierModalTitle").textContent = "Nouveau Dossier — GEO SUIVI2";
+        document.getElementById("editDossierId").value = "";
+        document.getElementById("btnCloseDossierSupervisor").style.display = "none";
+        document.getElementById("dossierStatusBanner").style.display = "none";
+
+        document.getElementById("fRepertoire").value = `GS2${nextNum}`;
+        document.getElementById("fBl").value = "";
+        document.getElementById("fBlType").value = "ORIGINAL";
+        document.getElementById("fClient").value = "";
+        document.getElementById("fNavire").value = "";
+        document.getElementById("fLieuDepot").value = "VILLE";
+        document.getElementById("fPaysProvenance").value = "";
+        document.getElementById("fDestination").value = "";
+        document.getElementById("fTransportMode").value = "SUR_CAMION";
+        document.getElementById("fPoids").value = "";
+        document.getElementById("fQuantite").value = "";
+        document.getElementById("fCircuit").value = "VERT";
+        document.getElementById("fStatut").value = "En cours";
+
+        document.getElementById("fCautionMode").value = "PERMANENTE_ACTIVE";
+        document.getElementById("fDetentionStatus").value = "RAS";
+        document.getElementById("fDetentionAmount").value = "";
+        document.getElementById("fDateFinFranchise").value = "";
+        document.getElementById("fDateRetourPrevue").value = "";
+        document.getElementById("fGuceRef").value = "";
+        document.getElementById("fCautionNote").value = "";
+
+        document.getElementById("fPassationBon").value = "EN_ATTENTE";
+        document.getElementById("fPassationConsigne").value = "";
+        document.getElementById("fManTruckRequested").checked = false;
+
+        document.getElementById("fEmptyReturnDate").value = "";
+        workingEmptyReturnFile = "";
+        workingFiles = [];
+        workingTruckAssignments = [];
+        workingEvolutions = [{
+          date: new Date().toLocaleString("fr-FR"),
+          stage: "Enregistrement",
+          note: "Création du dossier GEO SUIVI2",
+          author: user?.username || "agent"
+        }];
+        renderContainerFields([""]);
+        document.getElementById("fPoints").value = "";
+      } else {
+        const d = state.dossiers.find((item) => item.id === id);
+        if (!d) return;
+        document.getElementById("dossierModalTitle").textContent = `Dossier ${d.repertoire} — GEO SUIVI2`;
+        document.getElementById("editDossierId").value = d.id;
+        document.getElementById("btnCloseDossierSupervisor").style.display = isSupervisor(user) && !d.closed ? "inline-block" : "none";
+
+        const alerts = getDossierAlerts(d);
+        const banner = document.getElementById("dossierStatusBanner");
+        if (d.closed || alerts.length || isDossierWaitingForTruck(d)) {
+          banner.style.display = "flex";
+          banner.innerHTML = `
+            <div>
+              ${d.closed ? "<strong>🔒 Dossier clôturé.</strong> " : ""}
+              ${alerts.length ? `<span class="pill rouge">${escapeHtml(alerts.join(" • "))}</span> ` : ""}
+              ${isDossierWaitingForTruck(d) ? `<span class="pill jaune">En attente de camion</span>` : ""}
+            </div>
+          `;
+        } else {
+          banner.style.display = "none";
+        }
+
+        document.getElementById("fRepertoire").value = d.repertoire || "";
+        document.getElementById("fBl").value = d.bl || "";
+        document.getElementById("fBlType").value = d.blType || "ORIGINAL";
+        document.getElementById("fClient").value = d.client || "";
+        document.getElementById("fNavire").value = d.navire || "";
+        document.getElementById("fLieuDepot").value = d.lieuDepot || "VILLE";
+        document.getElementById("fPaysProvenance").value = d.paysProvenance || "";
+        document.getElementById("fDestination").value = d.destination || "";
+        document.getElementById("fTransportMode").value = d.transportMode || "SUR_CAMION";
+        document.getElementById("fPoids").value = d.poids || "";
+        document.getElementById("fQuantite").value = d.quantite || "";
+        document.getElementById("fCircuit").value = d.circuit || "VERT";
+        document.getElementById("fStatut").value = d.statut || "";
+
+        document.getElementById("fCautionMode").value = d.cautionDetention?.cautionMode || "PERMANENTE_ACTIVE";
+        document.getElementById("fDetentionStatus").value = d.cautionDetention?.detentionStatus || "RAS";
+        document.getElementById("fDetentionAmount").value = d.cautionDetention?.detentionAmount || "";
+        document.getElementById("fDateFinFranchise").value = d.cautionDetention?.dateFinFranchise || "";
+        document.getElementById("fDateRetourPrevue").value = d.cautionDetention?.dateRetourPrevue || "";
+        document.getElementById("fGuceRef").value = d.cautionDetention?.guceRef || "";
+        document.getElementById("fCautionNote").value = d.cautionDetention?.note || "";
+
+        document.getElementById("fPassationBon").value = d.passation?.bon || "EN_ATTENTE";
+        document.getElementById("fPassationConsigne").value = d.passation?.consigne || "";
+        document.getElementById("fManTruckRequested").checked = !!d.passation?.truckRequested;
+
+        document.getElementById("fEmptyReturnDate").value = d.emptyReturn?.date || "";
+        workingEmptyReturnFile = d.emptyReturn?.fileName || "";
+        workingFiles = [...(d.files || [])];
+        workingTruckAssignments = JSON.parse(JSON.stringify(d.passation?.truckAssignments || []));
+        workingEvolutions = JSON.parse(JSON.stringify(d.evolutions || []));
+        renderContainerFields(d.containers && d.containers.length ? d.containers : [""]);
+        document.getElementById("fPoints").value = d.points || "";
+      }
+
+      toggleTruckSections();
+      renderTruckAssignmentRows();
+      renderTruckDemandPreview();
+      renderEmptyReturnFile();
+      renderDossierFiles();
+      renderEvolutionList();
+      applyRolePermissionsToModal();
+      modal.classList.add("open");
+    }
+
+    function collectDossierPayload(existingObj = null) {
+      const base = existingObj ? JSON.parse(JSON.stringify(existingObj)) : {
+        id: "gs2_" + Date.now(),
+        repertoire: "",
+        bl: "",
+        blType: "ORIGINAL",
+        client: "",
+        navire: "",
+        lieuDepot: "VILLE",
+        paysProvenance: "",
+        destination: "",
+        transportMode: "SUR_CAMION",
+        poids: "",
+        quantite: "",
+        circuit: "VERT",
+        statut: "En cours",
+        closed: false,
+        containers: [],
+        cautionDetention: {
+          cautionMode: "PERMANENTE_ACTIVE",
+          detentionStatus: "RAS",
+          detentionAmount: "",
+          dateFinFranchise: "",
+          dateRetourPrevue: "",
+          guceRef: "",
+          note: ""
+        },
+        passation: {
+          bon: "EN_ATTENTE",
+          consigne: "",
+          truckAssignments: [],
+          truckRequested: false
+        },
+        emptyReturn: { date: "", fileName: "" },
+        files: [],
+        evolutions: [],
+        points: ""
+      };
+
+      const user = getCurrentUser();
+      const perms = getPermissions(user);
+      const pendingStage = (document.getElementById("fEvoStage").value || "").trim();
+      const pendingNote = (document.getElementById("fEvoNote").value || "").trim();
+      if (perms.canEditEvolution && (pendingStage || pendingNote)) {
+        workingEvolutions.unshift({
+          date: new Date().toLocaleString("fr-FR"),
+          stage: pendingStage || (document.getElementById("fStatut").value || "").trim() || "Suivi",
+          note: pendingNote || "Étape renseignée",
+          author: user ? user.username : "agent"
+        });
+      }
+
+      if (perms.canEditGeneral) {
+        base.repertoire = document.getElementById("fRepertoire").value.trim().toUpperCase();
+        base.bl = document.getElementById("fBl").value.trim().toUpperCase();
+        base.blType = document.getElementById("fBlType").value;
+        base.client = document.getElementById("fClient").value.trim();
+        base.navire = document.getElementById("fNavire").value.trim().toUpperCase();
+        base.lieuDepot = document.getElementById("fLieuDepot").value;
+        base.paysProvenance = document.getElementById("fPaysProvenance").value.trim();
+        base.destination = document.getElementById("fDestination").value.trim();
+        base.transportMode = document.getElementById("fTransportMode").value;
+        base.poids = document.getElementById("fPoids").value.trim();
+        base.quantite = document.getElementById("fQuantite").value.trim();
+        base.circuit = document.getElementById("fCircuit").value;
+        base.statut = document.getElementById("fStatut").value.trim();
+      } else if (!existingObj) {
+        base.repertoire = document.getElementById("fRepertoire").value.trim().toUpperCase();
+      }
+
+      if (perms.canEditContainers) {
+        base.containers = Array.from(new Set(getContainerFieldValues().filter(Boolean)));
+      }
+
+      if (perms.canEditCautionDetention) {
+        base.cautionDetention = {
+          cautionMode: document.getElementById("fCautionMode").value,
+          detentionStatus: document.getElementById("fDetentionStatus").value,
+          detentionAmount: document.getElementById("fDetentionAmount").value.trim(),
+          dateFinFranchise: document.getElementById("fDateFinFranchise").value,
+          dateRetourPrevue: document.getElementById("fDateRetourPrevue").value,
+          guceRef: document.getElementById("fGuceRef").value.trim().toUpperCase(),
+          note: document.getElementById("fCautionNote").value.trim()
+        };
+      }
+
+      if (perms.canEditPassation) {
+        base.passation = {
+          bon: document.getElementById("fPassationBon").value,
+          consigne: document.getElementById("fPassationConsigne").value.trim(),
+          truckAssignments: JSON.parse(JSON.stringify(workingTruckAssignments)),
+          truckRequested: document.getElementById("fManTruckRequested").checked
+        };
+      }
+
+      if (perms.canEditEmptyReturn) {
+        base.emptyReturn = {
+          date: document.getElementById("fEmptyReturnDate").value,
+          fileName: workingEmptyReturnFile
+        };
+        base.files = [...workingFiles];
+      }
+
+      if (perms.canEditEvolution) {
+        base.evolutions = JSON.parse(JSON.stringify(workingEvolutions));
+      }
+
+      if (perms.canEditPoints) {
+        base.points = document.getElementById("fPoints").value.trim();
+      }
+
+      return base;
+    }
+
+    function saveDossier() {
+      const id = document.getElementById("editDossierId").value;
+      const existing = id ? state.dossiers.find((d) => d.id === id) : null;
+      const payload = collectDossierPayload(existing);
+
+      if (!payload.repertoire) {
+        showToast("Le numéro de répertoire est obligatoire.");
+        return;
+      }
+
+      if (id) {
+        const idx = state.dossiers.findIndex((d) => d.id === id);
+        if (idx >= 0) state.dossiers[idx] = payload;
+      } else {
+        state.dossiers.unshift(payload);
+      }
+
+      saveState();
+      closeModal("dossierModal");
+      renderApp();
+      showToast(`Dossier ${payload.repertoire} enregistré.`);
+    }
+
+    function closeDossierBySupervisor() {
+      if (!isSupervisor(getCurrentUser())) {
+        showToast("Seul le Superviseur peut clôturer un dossier.");
+        return;
+      }
+      const id = document.getElementById("editDossierId").value;
+      const existing = id ? state.dossiers.find((d) => d.id === id) : null;
+      const payload = collectDossierPayload(existing);
+      payload.closed = true;
+      payload.statut = payload.statut || "Clôturé";
+      payload.evolutions.unshift({
+        date: new Date().toLocaleString("fr-FR"),
+        stage: "Clôture dossier",
+        note: "Dossier clôturé par le Superviseur",
+        author: getCurrentUser()?.username || "superviseur"
+      });
+
+      if (id) {
+        const idx = state.dossiers.findIndex((d) => d.id === id);
+        if (idx >= 0) state.dossiers[idx] = payload;
+      } else {
+        state.dossiers.unshift(payload);
+      }
+
+      saveState();
+      closeModal("dossierModal");
+      renderApp();
+      showToast(`Dossier ${payload.repertoire} clôturé.`);
+    }
+
+    function formatTruckAssignmentsForBordereau(d) {
+      const list = d.passation?.truckAssignments || [];
+      if (!list.length) return "Aucun camion renseigné";
+      return list.map((row) => {
+        if (d.transportMode === "DEPOTAGE") {
+          return `${row.truck || "Camion"} (Poids : ${row.poids || "-"}, Qté : ${row.quantite || "-"})`;
+        }
+        return `${row.truck || "Camion"} (TC : ${row.containers || "-"})`;
+      }).join(" ; ");
+    }
+
+    function buildBordereauHtml(dossiersList, titleText) {
+      const nowStr = new Date().toLocaleString("fr-FR");
+      const cards = dossiersList.map((d) => {
+        const pointsLines = (d.points || "Aucun point renseigné.")
+          .split("\n")
+          .filter(Boolean)
+          .map((line) => `<li>${escapeHtml(line.replace(/^[-•*]\s*/, ""))}</li>`)
+          .join("");
+        const containersText = (d.containers && d.containers.length) ? d.containers.join(", ") : "Non précisé";
+        const evoHtml = (d.evolutions && d.evolutions.length)
+          ? `<div style="margin-top:8px;"><strong>ÉVOLUTION DU DOSSIER :</strong><ul style="margin:4px 0 0 18px; padding:0;">${
+              d.evolutions.slice().reverse().map((e) => `<li><strong>${escapeHtml(e.date)}</strong> — <strong>${escapeHtml(e.stage)}</strong> : ${escapeHtml(e.note)}</li>`).join("")
+            }</ul></div>`
+          : "";
+
+        return `
+          <div style="border:1px solid #334155; border-radius:8px; padding:14px; margin-bottom:16px; page-break-inside:avoid;">
+            <div style="display:flex; justify-content:space-between; border-bottom:1px solid #cbd5e1; padding-bottom:6px; margin-bottom:10px;">
+              <strong>RÉPERTOIRE : ${escapeHtml(d.repertoire)}</strong>
+              <span><strong>STATUT :</strong> ${escapeHtml(d.statut || "N/A")} (${escapeHtml(d.circuit)})</span>
+            </div>
+            <p style="margin:4px 0;"><strong>N° BL :</strong> ${escapeHtml(d.bl || "-")} (${escapeHtml(formatBlTypeLabel(d.blType))}) &nbsp;|&nbsp; <strong>CLIENT :</strong> ${escapeHtml(d.client || "-")}</p>
+            <p style="margin:4px 0;"><strong>LIEU DÉPOTAGE :</strong> ${escapeHtml(formatLieuDepotLabel(d.lieuDepot))} &nbsp;|&nbsp; <strong>DESTINATION :</strong> ${escapeHtml(d.destination || "-")}</p>
+            <p style="margin:4px 0;"><strong>CAUTION :</strong> ${escapeHtml(formatCautionModeLabel(d.cautionDetention?.cautionMode))} &nbsp;|&nbsp; <strong>DÉTENTION :</strong> ${escapeHtml(d.cautionDetention?.detentionStatus || "RAS")} ${d.cautionDetention?.detentionAmount ? "(" + escapeHtml(d.cautionDetention.detentionAmount) + ")" : ""}</p>
+            <p style="margin:4px 0;"><strong>CONTENEURS :</strong> ${escapeHtml(containersText)}</p>
+            <p style="margin:4px 0;"><strong>CAMIONS :</strong> ${escapeHtml(formatTruckAssignmentsForBordereau(d))}</p>
+            <p style="margin:4px 0;"><strong>RETOUR VIDE :</strong> ${d.emptyReturn?.date ? escapeHtml(d.emptyReturn.date) + (d.emptyReturn.fileName ? " (" + escapeHtml(d.emptyReturn.fileName) + ")" : "") : "Non renseigné"}</p>
+            <div style="margin-top:8px;">
+              <strong>POINTS D'AVANCEMENT :</strong>
+              <ul style="margin:6px 0 0 18px; padding:0;">${pointsLines}</ul>
+            </div>
+            ${evoHtml}
+          </div>
+        `;
+      }).join("");
+
+      return `
+        <div>
+          <div style="display:flex; justify-content:space-between; align-items:flex-end; border-bottom:2px solid #0f172a; padding-bottom:10px; margin-bottom:16px;">
+            <div>
+              <h1 style="margin:0; font-size:20px;">GEO SUIVI2 (LOMÉ) — ${escapeHtml(titleText)}</h1>
+              <div style="font-size:12px; color:#475569;">Bordereau de suivi portuaire, caution, détention &amp; hinterland</div>
+            </div>
+            <div style="font-size:12px; text-align:right;">Édité le ${escapeHtml(nowStr)}</div>
+          </div>
+          ${cards}
+        </div>
+      `;
+    }
+
+    function triggerPrintHtml(htmlContent) {
+      const area = document.getElementById("printArea");
+      area.innerHTML = htmlContent;
+      window.print();
+    }
+
+    function exportSingleBordereauPdf(id = null) {
+      const targetId = id || document.getElementById("editDossierId").value;
+      const d = state.dossiers.find((item) => item.id === targetId);
+      if (!d) {
+        showToast("Dossier introuvable.");
+        return;
+      }
+      triggerPrintHtml(buildBordereauHtml([d], `BORDEREAU ${d.repertoire}`));
+    }
+
+    function printSingleBordereauPdf() {
+      exportSingleBordereauPdf(document.getElementById("editDossierId").value);
+    }
+
+    function exportBulkBordereauPdf() {
+      const selected = state.dossiers.filter((d) => selectedIds.has(d.id));
+      const list = selected.length ? selected : getFilteredDossiers();
+      if (!list.length) {
+        showToast("Aucun dossier à exporter.");
+        return;
+      }
+      triggerPrintHtml(buildBordereauHtml(list, `BORDEREAUX GROUPÉS (${list.length})`));
+    }
+
+    function openAdminModal() {
+      const user = getCurrentUser();
+      if (!isAdmin(user)) {
+        showToast("Accès réservé à l'Administrateur.");
+        return;
+      }
+
+      document.getElementById("adminSessionsBody").innerHTML = state.users.map((u) => `
+        <tr>
+          <td><strong>${escapeHtml(u.name)}</strong></td>
+          <td>${escapeHtml(u.username)}</td>
+          <td>${escapeHtml(u.roles.join(", "))}</td>
+          <td>${u.online ? '<span class="pill vert">En ligne</span>' : '<span class="pill" style="background:#e2e8f0; color:#334155;">Hors ligne</span>'}</td>
+          <td>${escapeHtml(u.lastSeen || "-")}</td>
+        </tr>
+      `).join("");
+
+      document.getElementById("adminUsersList").innerHTML = state.users.map((u) => {
+        const checkboxes = AVAILABLE_ROLES.map((r) => {
+          const checked = u.roles.includes(r) ? "checked" : "";
+          return `
+            <label class="role-chip">
+              <input type="checkbox" ${checked} onchange="toggleUserRole('${u.id}', '${r}', this.checked)" />
+              ${r}
+            </label>
+          `;
+        }).join("");
+        return `
+          <div style="padding:10px 0; border-bottom:1px solid var(--border);">
+            <div style="font-weight:600; margin-bottom:6px;">${escapeHtml(u.name)} (${escapeHtml(u.username)})</div>
+            <div class="role-grid">${checkboxes}</div>
+          </div>
+        `;
+      }).join("");
+
+      document.getElementById("newAgentRoles").innerHTML = AVAILABLE_ROLES.map((r) => `
+        <label class="role-chip">
+          <input type="checkbox" class="new-agent-role-cb" value="${r}" ${r === "AGENT_TRANSIT" ? "checked" : ""} />
+          ${r}
+        </label>
+      `).join("");
+
+      document.getElementById("adminModal").classList.add("open");
+    }
+
+    function toggleUserRole(userId, role, enabled) {
+      const target = state.users.find((u) => u.id === userId);
+      if (!target) return;
+      const set = new Set(target.roles);
+      if (enabled) set.add(role);
+      else set.delete(role);
+      target.roles = Array.from(set);
+      saveState();
+      renderApp();
+      showToast(`Rôles mis à jour pour ${target.username}.`);
+    }
+
+    function createNewAgent() {
+      const name = document.getElementById("newAgentName").value.trim();
+      const username = document.getElementById("newAgentUser").value.trim().toLowerCase();
+      const password = document.getElementById("newAgentPass").value;
+      const roles = Array.from(document.querySelectorAll(".new-agent-role-cb:checked")).map((cb) => cb.value);
+
+      if (!name || !username || !password) {
+        showToast("Veuillez remplir nom, identifiant et mot de passe.");
+        return;
+      }
+
+      if (state.users.some((u) => u.username.toLowerCase() === username)) {
+        showToast("Cet identifiant existe déjà.");
+        return;
+      }
+
+      state.users.push({
+        id: "u_" + Date.now(),
+        name,
+        username,
+        passwordHash: btoa(password),
+        roles: roles.length ? roles : ["AGENT_TRANSIT"],
+        online: false,
+        lastSeen: "Jamais connecté"
+      });
+
+      saveState();
+      document.getElementById("newAgentName").value = "";
+      document.getElementById("newAgentUser").value = "";
+      document.getElementById("newAgentPass").value = "";
+      openAdminModal();
+      showToast(`Agent ${username} ajouté.`);
+    }
+
+    function openSettingsModal() {
+      if (!isSupervisor(getCurrentUser())) {
+        showToast("Accès réservé au Superviseur et à l'Administrateur.");
+        return;
+      }
+      document.getElementById("settingCautionGlobalState").value = state.settings.cautionGlobalState || "ACTIVE";
+      document.getElementById("settingCautionDetail").value = state.settings.cautionDetail || "";
+      document.getElementById("settingContactEmail").value = state.settings.contactEmail || "operations@geosuivi2.tg";
+      document.getElementById("settingsModal").classList.add("open");
+    }
+
+    function saveSettings() {
+      if (!isSupervisor(getCurrentUser())) return;
+      state.settings.cautionGlobalState = document.getElementById("settingCautionGlobalState").value;
+      state.settings.cautionDetail = document.getElementById("settingCautionDetail").value.trim();
+      state.settings.contactEmail = (document.getElementById("settingContactEmail").value || "").trim() || "operations@geosuivi2.tg";
+      saveState();
+      closeModal("settingsModal");
+      renderApp();
+      showToast("Réglages enregistrés.");
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove("open");
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+      const form = document.getElementById("loginForm");
+      if (form) form.addEventListener("submit", handleLogin);
+      updateCloudUi();
+      renderApp();
+      if (cloudCfg.enabled) {
+        pullCloudNow(true);
+      }
+      setInterval(function () {
+        if (cloudCfg.enabled && getCurrentUser()) {
+          pullCloudNow(true);
+        }
+      }, 15000);
+    });
+  </script>
+</body>
+</html>
